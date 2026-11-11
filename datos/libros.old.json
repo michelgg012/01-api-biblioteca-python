@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "titulo": "La metamorfosis",
+    "autor": "Ovidio",
+    "anio": 2000,
+    "disponible": true
+  },
+  {
+    "id": 2,
+    "titulo": "La Iliada",
+    "autor": "Homero",
+    "anio": 2000,
+    "disponible": true
+  },
+  {
+    "id": 3,
+    "titulo": "El principito",
+    "autor": "Homero",
+    "anio": 2000,
+    "disponible": true
+  }
+]
