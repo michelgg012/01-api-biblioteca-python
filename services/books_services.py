@@ -101,3 +101,24 @@ class book_services:
             status_code=404,
             detail="Libro no encontrado"
         )
+
+    # async def update_books_by_id(self):
+    """enderakore  """
+
+    async def delete_book(self, id: int):
+        create_path(self)
+        books = read_json(self)
+
+        for index, book in enumerate(books):
+            if book["id"] == id:
+                books.pop(index)
+
+                with open(self.path, "w", encoding="utf-8") as f:
+                    json.dump(books, f, ensure_ascii=False, indent=2)
+
+                return
+
+        raise HTTPException(
+            status_code=404,
+            detail="Libro no encontrado"
+        )

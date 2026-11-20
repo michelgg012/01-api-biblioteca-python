@@ -42,3 +42,19 @@ async def getBooks(autor: str | None = None,
 @router.get("/{id}", status_code=200)
 async def get_book_by_id(id: int):
     return await service.get_books_by_id(id)
+
+
+"""Endpoint: eliminar libro por id"""
+
+
+@router.delete("/{id}", status_code=204)
+async def delete_book(id: int):
+    await service.delete_book(id)
+
+
+"""Endpoint: actualizar libro por id"""
+
+
+# @router.put("/{id}", status_code=200)
+# async def update_book(id: int, book: book_schema):
+#     return await service.update_book(id, book)
