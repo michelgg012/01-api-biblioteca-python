@@ -36,9 +36,9 @@ async def getBooks(autor: str | None = None,
         limite=limite,
     )
 
-"""Endpoint: obtener libros por id"""
+"""Endpoint: obtener libros por id """
 
 
-@router.get("/:id", status_code=200)
-async def getBooks(id):
+@router.get("/{id}", status_code=200)
+async def get_book_by_id(id: int):
     return await service.get_books_by_id(id)

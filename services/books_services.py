@@ -90,4 +90,14 @@ class book_services:
         books = sorted(books, key=lambda book: book["id"])
         return books[desde: desde + limite]
 
-    # async def get_books_by_id():
+    async def get_books_by_id(self, id: int):
+        books = read_json(self)
+
+        for book in books:
+            if book["id"] == id:
+                return book
+
+        raise HTTPException(
+            status_code=404,
+            detail="Libro no encontrado"
+        )
