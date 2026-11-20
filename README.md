@@ -8,3 +8,5 @@ Pasos para el desarrollo:
 4. pip freeze > requirements.txt
 
 Pasos para el despliegue:
+pip install
+fastapi dev main.py

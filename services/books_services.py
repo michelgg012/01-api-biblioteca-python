@@ -16,6 +16,15 @@ def create_path(self):
             json.dump([], f, ensure_ascii=False, indent=2)
 
 
+def read_json(self):
+    with open(self.path, "r", encoding='utf-8') as f:
+        try:
+            books = json.load(f)
+        except json.JSONDecodeError:
+            books = []
+    return books
+
+
 class book_services:
     def __init__(self, path: Path):
         self.path = path
@@ -30,11 +39,7 @@ class book_services:
         # Crear archivo si no existe | w = write
         create_path(self)
         # Leer libros existentes | r = read
-        with open(self.path, "r", encoding='utf-8') as f:
-            try:
-                books = json.load(f)
-            except json.JSONDecodeError:
-                books = []
+        books = read_json(self)
         if any(
             book["titulo"].lower() == titulo.lower() and
             book["autor"].lower() == autor.lower()
@@ -61,3 +66,28 @@ class book_services:
             json.dump(books, f, ensure_ascii=False, indent=2)
 
         return book
+
+    async def get_books(self,
+                        autor: str | None = None,
+                        disponible: bool | None = None,
+                        desde: int | None = 0,
+                        limite: int = 100):
+
+        # Crear archivo si no existe | w = write
+        create_path(self)
+        books = read_json(self)
+
+        if autor is not None:
+            books = [
+                book for book in books
+                if book["autor"].lower() == autor.lower()
+            ]
+        if disponible is not None:
+            books = [
+                book for book in books
+                if book["disponible"] == disponible
+            ]
+        books = sorted(books, key=lambda book: book["id"])
+        return books[desde: desde + limite]
+
+    # async def get_books_by_id():

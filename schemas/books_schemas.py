@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from fastapi import Query
 
 
 class book_schema(BaseModel):
@@ -8,8 +9,8 @@ class book_schema(BaseModel):
     disponible: bool = True
 
 
-# class get_book_filter(BaseModel):
-#     titulo: str = Field(min_length=1),
-#     disponible: bool
-#     desde: int
-#     limite: int
+class get_book_filter(BaseModel):
+    autor: str | None = None
+    disponible: bool | None = None
+    desde: int = Query(default=0, ge=0)
+    limite: int = Query(default=100, ge=0)

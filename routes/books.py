@@ -2,7 +2,7 @@
 - Utilice CamelCase para el nombre de las funciones 
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from schemas.books_schemas import book_schema, get_book_filter
 from services.books_services import book_services
 from pathlib import Path
@@ -19,3 +19,26 @@ service = book_services(project_path / "datos" / "libros.json")
 @router.post("/", status_code=201)
 async def addBook(book: book_schema):
     return await service.create_book(book)
+
+
+"""Endpoint para obtener libros guardados"""
+
+
+@router.get("/", status_code=200)
+async def getBooks(autor: str | None = None,
+                   disponible: bool | None = None,
+                   desde: int = Query(default=0, ge=0),
+                   limite: int = Query(default=100, ge=0),):
+    return await service.get_books(
+        autor=autor,
+        disponible=disponible,
+        desde=desde,
+        limite=limite,
+    )
+
+"""Endpoint: obtener libros por id"""
+
+
+@router.get("/:id", status_code=200)
+async def getBooks(id):
+    return await service.get_books_by_id(id)
