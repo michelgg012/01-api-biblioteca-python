@@ -3,7 +3,7 @@
 """
 
 from fastapi import APIRouter, HTTPException, Query
-from schemas.books_schemas import book_schema, get_book_filter
+from schemas.books_schemas import book_schema, get_book_filter, patch_book_schema
 from services.books_services import book_services
 from pathlib import Path
 
@@ -55,6 +55,14 @@ async def delete_book(id: int):
 """Endpoint: actualizar libro por id"""
 
 
-# @router.put("/{id}", status_code=200)
-# async def update_book(id: int, book: book_schema):
-#     return await service.update_book(id, book)
+@router.put("/{id}", status_code=200)
+async def update_book(id: int, book: book_schema):
+    return await service.update_books_by_id(id, book)
+
+
+"""Endpoint: patch actualizar libro pero no todo """
+
+
+@router.patch('/{id}', status_code=200)
+async def patch_book(id: int, book: patch_book_schema):
+    return await service.patch_book(id, book)

@@ -1,7 +1,7 @@
 """ Para separar la logica de negocio del endpoint """
 # Imports
 from fastapi import HTTPException
-from schemas.books_schemas import book_schema
+from schemas.books_schemas import book_schema, patch_book_schema
 from pathlib import Path
 import json
 import os
@@ -102,7 +102,51 @@ class book_services:
             detail="Libro no encontrado"
         )
 
-    # async def update_books_by_id(self):
+    async def update_books_by_id(self, id: int, book: book_schema):
+        create_path(self)
+        books = read_json(self)
+
+        for index, existing_book in enumerate(books):
+            if existing_book["id"] == id:
+                updated_book = {
+                    "id": id,
+                    "titulo": book.titulo,
+                    "autor": book.autor,
+                    "anio": book.anio,
+                    "disponible": book.disponible
+                }
+
+                books[index] = updated_book
+
+                with open(self.path, "w", encoding="utf-8") as f:
+                    json.dump(books, f, ensure_ascii=False, indent=2)
+
+                return updated_book
+            raise HTTPException(
+                status_code=404,
+                detail="Libro no encontrado")
+
+    async def patch_book(self, id: int, book: patch_book_schema):
+        create_path(self)
+        books = read_json(self)
+
+        for existing_book in books:
+            if existing_book["id"] == id:
+                changes = book.model_dump(exclude_unset=True)
+
+                for field, value in changes.items():
+                    existing_book[field] = value
+
+                with open(self.path, "w", encoding="utf-8") as f:
+                    json.dump(books, f, ensure_ascii=False, indent=2)
+
+                return existing_book
+
+        raise HTTPException(
+            status_code=404,
+            detail="Libro no encontrado"
+        )
+
     """enderakore  """
 
     async def delete_book(self, id: int):
