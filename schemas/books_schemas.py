@@ -3,8 +3,8 @@ from fastapi import Query
 
 
 class book_schema(BaseModel):
-    titulo: str = Field(min_length=1)
-    autor: str = Field(min_length=1)
+    titulo: str = Field(min_length=3, max_length=100)
+    autor: str = Field(min_length=3, max_length=60)
     anio: int = Field(ge=1000, le=2100)
     disponible: bool = True
 

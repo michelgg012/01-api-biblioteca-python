@@ -16,7 +16,7 @@ service = book_services(project_path / "datos" / "libros.json")
 """Endpoint para agregar libros y guardarlos en un archivo json"""
 
 
-@router.post("/", status_code=201)
+@router.post("", status_code=201)
 async def addBook(book: book_schema):
     return await service.create_book(book)
 
@@ -24,7 +24,7 @@ async def addBook(book: book_schema):
 """Endpoint para obtener libros guardados"""
 
 
-@router.get("/", status_code=200)
+@router.get("", status_code=200)
 async def getBooks(autor: str | None = None,
                    disponible: bool | None = None,
                    desde: int = Query(default=0, ge=0),

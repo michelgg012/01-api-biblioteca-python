@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 .env
 datos/libros.json
+datos/next_id.txt

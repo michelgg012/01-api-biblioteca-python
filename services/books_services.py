@@ -10,9 +10,10 @@ import os
 
 
 def create_path(self):
-    # Crear archivo si no existe | w = write
-    if not os.path.exists(self.path):
-        with open(self.path, "w", encoding="utf-8") as f:
+    # Crear la carpeta y el archivo si no existen.
+    self.path.parent.mkdir(parents=True, exist_ok=True)
+    if not self.path.exists():
+        with self.path.open("w", encoding="utf-8") as f:
             json.dump([], f, ensure_ascii=False, indent=2)
 
 
@@ -23,6 +24,26 @@ def read_json(self):
         except json.JSONDecodeError:
             books = []
     return books
+
+
+# funcion que me ayudo la IA
+def get_next_id(self, books):
+    count_path = self.path.with_name("next_id.txt")
+    minimum_id = max((book["id"] for book in books), default=0) + 1
+
+    if count_path.exists():
+        try:
+            saved_id = int(count_path.read_text(encoding='utf-8').strip())
+            next_id = max(saved_id, minimum_id)
+        except ValueError:
+            next_id = minimum_id
+    else:
+        next_id = minimum_id
+    count_path.write_text(
+        str(next_id + 1),
+        encoding='utf-8'
+    )
+    return next_id
 
 
 class book_services:
@@ -49,8 +70,7 @@ class book_services:
                 status_code=409,
                 detail="El libro ya se encuentra registrado")
         # Generar id unico
-        next_id = max((book["id"] for book in books), default=0) + 1
-
+        next_id = get_next_id(self, books)
         # Agregar nuevo libro
         book = {
             "id": next_id,
@@ -91,6 +111,7 @@ class book_services:
         return books[desde: desde + limite]
 
     async def get_books_by_id(self, id: int):
+        create_path(self)
         books = read_json(self)
 
         for book in books:
@@ -122,9 +143,9 @@ class book_services:
                     json.dump(books, f, ensure_ascii=False, indent=2)
 
                 return updated_book
-            raise HTTPException(
-                status_code=404,
-                detail="Libro no encontrado")
+        raise HTTPException(
+            status_code=404,
+            detail="Libro no encontrado")
 
     async def patch_book(self, id: int, book: patch_book_schema):
         create_path(self)
