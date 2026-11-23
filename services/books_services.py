@@ -1,49 +1,16 @@
-""" Para separar la logica de negocio del endpoint """
+""" Modulo de servicios de la logica de negocio.
+    Me quedo un poco largo si
+"""
 # Imports
 from fastapi import HTTPException
 from schemas.books_schemas import book_schema, patch_book_schema
 from pathlib import Path
 import json
-import os
-
-# Ruta del archivo
-
-
-def create_path(self):
-    # Crear la carpeta y el archivo si no existen.
-    self.path.parent.mkdir(parents=True, exist_ok=True)
-    if not self.path.exists():
-        with self.path.open("w", encoding="utf-8") as f:
-            json.dump([], f, ensure_ascii=False, indent=2)
-
-
-def read_json(self):
-    with open(self.path, "r", encoding='utf-8') as f:
-        try:
-            books = json.load(f)
-        except json.JSONDecodeError:
-            books = []
-    return books
-
-
-# funcion que me ayudo la IA
-def get_next_id(self, books):
-    count_path = self.path.with_name("next_id.txt")
-    minimum_id = max((book["id"] for book in books), default=0) + 1
-
-    if count_path.exists():
-        try:
-            saved_id = int(count_path.read_text(encoding='utf-8').strip())
-            next_id = max(saved_id, minimum_id)
-        except ValueError:
-            next_id = minimum_id
-    else:
-        next_id = minimum_id
-    count_path.write_text(
-        str(next_id + 1),
-        encoding='utf-8'
-    )
-    return next_id
+from services.books_storage import (
+    create_path,
+    read_json,
+    get_next_id,
+)
 
 
 class book_services:
@@ -55,12 +22,12 @@ class book_services:
         titulo = book.titulo
         autor = book.autor
         anio = book.anio
-        disponible = book.disponible = True
+        disponible = book.disponible
 
         # Crear archivo si no existe | w = write
-        create_path(self)
+        create_path(self.path)
         # Leer libros existentes | r = read
-        books = read_json(self)
+        books = read_json(self.path)
         if any(
             book["titulo"].lower() == titulo.lower() and
             book["autor"].lower() == autor.lower()
@@ -70,7 +37,7 @@ class book_services:
                 status_code=409,
                 detail="El libro ya se encuentra registrado")
         # Generar id unico
-        next_id = get_next_id(self, books)
+        next_id = get_next_id(self.path, books)
         # Agregar nuevo libro
         book = {
             "id": next_id,
@@ -94,8 +61,8 @@ class book_services:
                         limite: int = 100):
 
         # Crear archivo si no existe | w = write
-        create_path(self)
-        books = read_json(self)
+        create_path(self.path)
+        books = read_json(self.path)
 
         if autor is not None:
             books = [
@@ -110,9 +77,20 @@ class book_services:
         books = sorted(books, key=lambda book: book["id"])
         return books[desde: desde + limite]
 
+    async def search_books(self, texto: str):
+        create_path(self.path)
+        books = read_json(self.path)
+
+        texto = texto.casefold()
+        return [
+            book for book in books
+            if texto in book["titulo"].casefold()
+            or texto in book["autor"].casefold()
+        ]
+
     async def get_books_by_id(self, id: int):
-        create_path(self)
-        books = read_json(self)
+        create_path(self.path)
+        books = read_json(self.path)
 
         for book in books:
             if book["id"] == id:
@@ -124,8 +102,8 @@ class book_services:
         )
 
     async def update_books_by_id(self, id: int, book: book_schema):
-        create_path(self)
-        books = read_json(self)
+        create_path(self.path)
+        books = read_json(self.path)
 
         for index, existing_book in enumerate(books):
             if existing_book["id"] == id:
@@ -148,8 +126,8 @@ class book_services:
             detail="Libro no encontrado")
 
     async def patch_book(self, id: int, book: patch_book_schema):
-        create_path(self)
-        books = read_json(self)
+        create_path(self.path)
+        books = read_json(self.path)
 
         for existing_book in books:
             if existing_book["id"] == id:
@@ -171,8 +149,8 @@ class book_services:
     """enderakore  """
 
     async def delete_book(self, id: int):
-        create_path(self)
-        books = read_json(self)
+        create_path(self.path)
+        books = read_json(self.path)
 
         for index, book in enumerate(books):
             if book["id"] == id:

@@ -3,7 +3,7 @@
 """
 
 from fastapi import APIRouter, HTTPException, Query
-from schemas.books_schemas import book_schema, get_book_filter, patch_book_schema
+from schemas.books_schemas import book_schema, patch_book_schema
 from services.books_services import book_services
 from pathlib import Path
 
@@ -35,6 +35,15 @@ async def getBooks(autor: str | None = None,
         desde=desde,
         limite=limite,
     )
+
+''' Endpoint: Obtener libros por autor o titulo'''
+
+
+@router.get("/buscar", status_code=200)
+async def search_books(
+    texto: str = Query(..., min_length=1),
+):
+    return await service.search_books(texto)
 
 """Endpoint: obtener libros por id """
 

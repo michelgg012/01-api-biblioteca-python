@@ -1,12 +1,38 @@
-Trabajo integrador: Api de biblioteca
+Trabajo integrador:
+API REST desarrollada con FastAPI para administrar libros mediante un archivo JSON.
 
-Pasos para el desarrollo:
+## Requisitos
 
-1. python -m venv .venv
-2. venv\Scripts\Activate
-3. pip install "fastapi[standard]"
-4. pip freeze > requirements.txt
+- Python 3.10 o superior
+- FastAPI
+- Pydantic
+- Uvicorn
 
-Pasos para el despliegue:
-pip install
-fastapi dev main.py
+## Instalación en Windows
+
+Crear el entorno virtual:
+
+- python -m venv .venv
+
+Instalar dependencias:
+
+- pip install -r requirements.txt
+
+Ejecucion:
+
+- uvicorn main:app --reload
+
+La API estará disponible en:
+
+- http://127.0.0.1:8000
+
+para revisar los endpoints:
+
+- http://127.0.0.1:8000/docs
+
+## Persistencia
+
+Persistencia para los datos de los libros:
+datos/libros.json
+Persistencia para el id:
+datos/next_id.txt
